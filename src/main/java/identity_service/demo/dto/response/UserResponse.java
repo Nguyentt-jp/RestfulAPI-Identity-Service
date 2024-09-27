@@ -1,6 +1,5 @@
-package identity_service.demo.entity;
+package identity_service.demo.dto.response;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,16 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
-@Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-@Table(name = "users")
-public class User {
+public class UserResponse {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     private String userName;
     private String password;

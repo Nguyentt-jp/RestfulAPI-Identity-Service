@@ -1,9 +1,8 @@
 package identity_service.demo.controller;
 
-import identity_service.demo.dto.request.ApiResponse;
+import identity_service.demo.dto.response.ApiResponse;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
-import identity_service.demo.entity.User;
 import identity_service.demo.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

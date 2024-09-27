@@ -1,6 +1,6 @@
 package identity_service.demo.exception;
 
-import identity_service.demo.dto.request.ApiResponse;
+import identity_service.demo.dto.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

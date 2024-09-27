@@ -2,16 +2,17 @@ package identity_service.demo.service.impl;
 
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
+import identity_service.demo.dto.response.UserResponse;
 import identity_service.demo.entity.User;
 import identity_service.demo.exception.AppException;
 import identity_service.demo.exception.ErrorCode;
+import identity_service.demo.mapper.UserMapper;
 import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.lang.String;
 import java.util.UUID;
 
 @Service
@@ -19,33 +20,33 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
-    public User createUser(CreationUserRequest user) {
-        User newUser = new User();
+    public UserResponse createUser(CreationUserRequest user) {
+
+        User newUser = userMapper.mapperToUser(user);
 
         if (userRepository.existsUserByUserName((user.getUserName()))) {
             throw new AppException(ErrorCode.INVALID_USER_EXISTED);
         }
 
-        newUser.setUserName(user.getUserName());
-        newUser.setPassword(user.getPassword());
-        newUser.setEmail(user.getEmail());
-        newUser.setFirstName(user.getFirstName());
-        newUser.setLastName(user.getLastName());
-
-        return userRepository.save(newUser);
+        return userMapper.mapperUserToUserResponse(userRepository.save(newUser));
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream().map(userMapper::mapperUserToUserResponse).toList();
     }
 
     @Override
-    public User getUserById(UUID id) {
+    public UserResponse getUserById(UUID id) {
 
-        return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.INVALID_USER_NOT_FOUND));
+        return userMapper.mapperUserToUserResponse(
+                userRepository.findById(id).orElseThrow(
+                        () -> new AppException(ErrorCode.INVALID_USER_NOT_FOUND)
+                )
+        );
     }
 
     @Override
@@ -55,16 +56,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(UUID id, UpdateUserRequest userUpdate) {
-        User newUser = getUserById(id);
+    public UserResponse updateUser(UUID id, UpdateUserRequest userUpdate) {
+        User newUser = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.INVALID_USER_NOT_FOUND));
 
-        newUser.setPassword(userUpdate.getPassword());
-        newUser.setFirstName(userUpdate.getFirstName());
-        newUser.setLastName(userUpdate.getLastName());
-        newUser.setEmail(userUpdate.getEmail());
+        userMapper.mapperUpdateUserToUser(newUser,userUpdate);
 
-        return userRepository.save(newUser);
+        return userMapper.mapperUserToUserResponse(userRepository.save(newUser));
     }
-
-
 }
