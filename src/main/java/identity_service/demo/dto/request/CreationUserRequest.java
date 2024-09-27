@@ -11,10 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreationUserRequest {
 
-    @Size(min = 5, message = "Username must be at least 3 characters")
+    @Size(min = 5, message = "INVALID_USERNAME")
     private String userName;
 
-    @Size(min = 8, message = "Password must be at least 3 characters")
+    @Size(min = 8, message = "INVALID_PASSWORD")
     private String password;
 
     private String firstName;

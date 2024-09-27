@@ -3,12 +3,15 @@ package identity_service.demo.service.impl;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
 import identity_service.demo.entity.User;
+import identity_service.demo.exception.AppException;
+import identity_service.demo.exception.ErrorCode;
 import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.lang.String;
 import java.util.UUID;
 
 @Service
@@ -21,8 +24,8 @@ public class UserServiceImpl implements UserService {
     public User createUser(CreationUserRequest user) {
         User newUser = new User();
 
-        if (userRepository.existsUserByUserName((user.getUserName()))){
-            throw  new RuntimeException("User Existed!");
+        if (userRepository.existsUserByUserName((user.getUserName()))) {
+            throw new AppException(ErrorCode.INVALID_USER_EXISTED);
         }
 
         newUser.setUserName(user.getUserName());
@@ -41,25 +44,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(UUID id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        return userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.INVALID_USER_NOT_FOUND));
     }
 
     @Override
     public void deleteUser(UUID id) {
-        User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.INVALID_USER_NOT_FOUND));
         userRepository.delete(user);
     }
 
     @Override
     public User updateUser(UUID id, UpdateUserRequest userUpdate) {
-        User newUser = new User();
+        User newUser = getUserById(id);
 
         newUser.setPassword(userUpdate.getPassword());
         newUser.setFirstName(userUpdate.getFirstName());
         newUser.setLastName(userUpdate.getLastName());
         newUser.setEmail(userUpdate.getEmail());
 
-        return userRepository.save(newUser);    }
+        return userRepository.save(newUser);
+    }
 
 
 }
