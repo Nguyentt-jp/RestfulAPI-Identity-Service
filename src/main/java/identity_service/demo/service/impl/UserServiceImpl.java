@@ -10,6 +10,8 @@ import identity_service.demo.mapper.UserMapper;
 import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +28,10 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(CreationUserRequest user) {
 
         User newUser = userMapper.mapperToUser(user);
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
         if (userRepository.existsUserByUserName((user.getUserName()))) {
             throw new AppException(ErrorCode.INVALID_USER_EXISTED);
@@ -60,6 +66,8 @@ public class UserServiceImpl implements UserService {
         User newUser = userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.INVALID_USER_NOT_FOUND));
 
         userMapper.mapperUpdateUserToUser(newUser,userUpdate);
+
+        newUser.setPassword(new BCryptPasswordEncoder(10).encode(userUpdate.getPassword()));
 
         return userMapper.mapperUserToUserResponse(userRepository.save(newUser));
     }
