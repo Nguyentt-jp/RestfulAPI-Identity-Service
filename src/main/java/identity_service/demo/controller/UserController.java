@@ -1,38 +1,47 @@
 package identity_service.demo.controller;
 
+import identity_service.demo.dto.response.ApiResponse;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
-import identity_service.demo.entity.User;
 import identity_service.demo.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 
     private final UserServiceImpl userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ApiResponse<Object> getAllUsers() {
+        return ApiResponse.builder()
+                .success(true)
+                .result(userService.getAllUsers())
+                .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public ApiResponse<Object> getUserById(@PathVariable(value = "id") UUID id) {
+
+        return ApiResponse.builder()
+                .success(true)
+                .result(userService.getUserById(id))
+                .build();
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid CreationUserRequest userCreation) {
-        return new  ResponseEntity<>(userService.createUser(userCreation),HttpStatus.CREATED);
+    public ApiResponse<Object> createUser(@RequestBody @Valid CreationUserRequest userCreation) {
+        return ApiResponse.builder()
+                .success(true)
+                .result(userService.createUser(userCreation))
+                .build();
     }
 
     @DeleteMapping("/{id}")
@@ -42,7 +51,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable("id") UUID id, @RequestBody UpdateUserRequest userUpdate) {
-        return ResponseEntity.ok(userService.updateUser(id,userUpdate));
+    public ApiResponse<Object> updateUser(@PathVariable("id") UUID id, @RequestBody UpdateUserRequest userUpdate) {
+        return ApiResponse.builder()
+                .success(true)
+                .result((userService.updateUser(id, userUpdate)))
+                .build();
     }
 }
