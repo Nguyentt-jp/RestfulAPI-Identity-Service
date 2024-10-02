@@ -1,5 +1,7 @@
 package identity_service.demo.configuration;
 
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,9 +46,9 @@ public class SecurityConfig {
 
     @Bean
     JwtDecoder jwtDecoder() {
-        SecretKeySpec keySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+        byte[] keyBytes = Decoders.BASE64.decode(signerKey);
         return NimbusJwtDecoder
-                .withSecretKey(keySpec)
+                .withSecretKey(Keys.hmacShaKeyFor(keyBytes))
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
     }
