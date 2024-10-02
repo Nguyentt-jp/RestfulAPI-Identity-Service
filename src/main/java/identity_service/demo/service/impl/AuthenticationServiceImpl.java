@@ -1,6 +1,7 @@
 package identity_service.demo.service.impl;
 
 import identity_service.demo.dto.request.AuthenticationRequest;
+import identity_service.demo.dto.request.IntrospectRequest;
 import identity_service.demo.dto.response.UserResponse;
 import identity_service.demo.entity.User;
 import identity_service.demo.exception.AppException;
@@ -18,6 +19,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final JwtTokenServiceImpl jwtTokenService;
     
     public UserResponse authenticate(AuthenticationRequest authenRequest) {
 
@@ -28,11 +30,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (new BCryptPasswordEncoder().matches(authenRequest.getPassword(), existedUser.getPassword())){
-            return userMapper.mapperUserToUserResponse(existedUser);
+            UserResponse userResponse = userMapper.mapperUserToUserResponse(existedUser);
+            userResponse.setToken(jwtTokenService.generateToken(existedUser.getUserName()));
+            return userResponse;
         }else {
             throw new AppException(ErrorCode.INVALID_LOGIN_FAILED);
         }
-        
+    }
 
+    public UserResponse authenticateWithToken(IntrospectRequest authenRequest) {
+        String name = jwtTokenService.getUsername(authenRequest.getToken());
+        User user = userRepository.findUserByUserName(name);
+
+        UserResponse userResponse = userMapper.mapperUserToUserResponse(user);
+        userResponse.setToken(authenRequest.getToken());
+        return userResponse;
     }
 }
