@@ -1,23 +1,23 @@
-package identity_service.demo.dto.request;
+package identity_service.demo.dto.response;
 
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreationUserRequest {
+@Builder
+public class UserResponse {
 
-    @Size(min = 5, message = "INVALID_USERNAME")
+    private UUID id;
     private String userName;
-
-    @Size(min = 8, message = "INVALID_PASSWORD")
     private String password;
-
     private String firstName;
     private String lastName;
     private String email;
+    private String token;
 }
