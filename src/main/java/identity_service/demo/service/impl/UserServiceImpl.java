@@ -3,6 +3,7 @@ package identity_service.demo.service.impl;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
 import identity_service.demo.dto.response.UserResponse;
+import identity_service.demo.entity.Role;
 import identity_service.demo.entity.User;
 import identity_service.demo.exception.AppException;
 import identity_service.demo.exception.ErrorCode;
@@ -14,7 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -23,26 +26,42 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponse createUser(CreationUserRequest user) {
 
         User newUser = userMapper.mapperToUser(user);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        Set<String> roles = new HashSet<>();
+        roles.add(Role.USER.name());
+
+        newUser.setRoles(roles);
+
 
         if (userRepository.existsUserByUserName((user.getUserName()))) {
             throw new AppException(ErrorCode.INVALID_USER_EXISTED);
         }
 
-        return userMapper.mapperUserToUserResponse(userRepository.save(newUser));
+        UserResponse userResponse = userMapper.mapperUserToUserResponse(userRepository.save(newUser));
+        userResponse.setRoles(roles);
+
+        return userResponse;
     }
 
     @Override
     public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::mapperUserToUserResponse).toList();
+
+        return userRepository.findAll().stream()
+                .map(user -> {
+                    UserResponse userResponse = userMapper.mapperUserToUserResponse(user);
+                    userResponse.setRoles(user.getRoles());
+                            return userResponse;
+                        }
+                )
+                .toList();
     }
 
     @Override

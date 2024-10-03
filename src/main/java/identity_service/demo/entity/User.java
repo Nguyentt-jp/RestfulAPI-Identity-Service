@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -24,4 +25,5 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
+    private Set<String> roles;
 }

@@ -7,6 +7,7 @@ import identity_service.demo.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -21,6 +22,16 @@ public class UserController {
 
     @GetMapping
     public ApiResponse<Object> getAllUsers() {
+
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        log.info("Authentication: {}", authentication);
+        log.info("User: {}", authentication.getName());
+
+        authentication.getAuthorities().forEach(
+                grantedAuthority -> log.info("GrantedAuthority: {}", grantedAuthority.getAuthority())
+                );
+
         return ApiResponse.builder()
                 .success(true)
                 .result(userService.getAllUsers())

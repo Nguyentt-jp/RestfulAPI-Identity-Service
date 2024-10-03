@@ -2,6 +2,7 @@ package identity_service.demo.service.impl;
 
 import identity_service.demo.dto.request.AuthenticationRequest;
 import identity_service.demo.dto.request.IntrospectRequest;
+import identity_service.demo.dto.response.TokenResponse;
 import identity_service.demo.dto.response.UserResponse;
 import identity_service.demo.entity.User;
 import identity_service.demo.exception.AppException;
@@ -21,7 +22,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserMapper userMapper;
     private final JwtTokenServiceImpl jwtTokenService;
     
-    public UserResponse authenticate(AuthenticationRequest authenRequest) {
+    public TokenResponse authenticate(AuthenticationRequest authenRequest) {
 
         User existedUser = userRepository.findUserByUserName(authenRequest.getUserName());
 
@@ -30,20 +31,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (new BCryptPasswordEncoder().matches(authenRequest.getPassword(), existedUser.getPassword())){
-            UserResponse userResponse = userMapper.mapperUserToUserResponse(existedUser);
-            userResponse.setToken(jwtTokenService.generateToken(existedUser.getUserName()));
-            return userResponse;
+
+            TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.setToken(jwtTokenService.generateToken(existedUser));
+            return tokenResponse;
         }else {
             throw new AppException(ErrorCode.INVALID_LOGIN_FAILED);
         }
     }
 
     public UserResponse authenticateWithToken(IntrospectRequest authenRequest) {
-        String name = jwtTokenService.getUsername(authenRequest.getToken());
-        User user = userRepository.findUserByUserName(name);
+        //String name = jwtTokenService.getUsername(authenRequest.getToken());
+        User user = new User();
+        if (jwtTokenService.validateToken(authenRequest.getToken())){
+            user = userRepository.findUserByUserName(jwtTokenService.getUsername(authenRequest.getToken()));
+        }
 
-        UserResponse userResponse = userMapper.mapperUserToUserResponse(user);
-        userResponse.setToken(authenRequest.getToken());
-        return userResponse;
+        return userMapper.mapperUserToUserResponse(user);
     }
 }
