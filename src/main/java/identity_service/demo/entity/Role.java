@@ -14,12 +14,19 @@ import java.util.Set;
 @Table(name = "roles")
 public class Role {
     @Id
+    @Column(name = "role_name")
     private String roleName;
+
     private String description;
 
-    /*@ManyToMany(fetch = FetchType.LAZY)
-    private Set<User> users;*/
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_name")
+    )
+    private Set<User> users;
 
-    @OneToMany(mappedBy = "permissionName", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "role")
     private Set<Permission> permissions;
 }

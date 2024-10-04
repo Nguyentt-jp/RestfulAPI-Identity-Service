@@ -14,16 +14,13 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionRepository permissionRepository;
 
     @Override
-    public PermissionResponse createPermission(PermissionCreationRequest permissionCreationRequest) {
+    public Permission createPermission(PermissionCreationRequest permissionCreationRequest) {
         Permission permission = Permission.builder()
-            .permissionName(permissionCreationRequest.getPermissionName())
+            .role(permissionCreationRequest.getRole())
             .description(permissionCreationRequest.getDescription())
             .build();
 
-        permissionRepository.save(permission);
-        return PermissionResponse.builder()
-            .permissionName(permission.getPermissionName())
-            .description(permission.getDescription())
-            .build();
+
+        return permissionRepository.save(permission);
     }
 }

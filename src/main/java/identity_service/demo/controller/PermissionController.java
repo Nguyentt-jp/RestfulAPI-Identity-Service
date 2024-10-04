@@ -6,6 +6,7 @@ import identity_service.demo.service.PermissionService;
 import identity_service.demo.service.impl.PermissionServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,7 +17,7 @@ public class PermissionController {
     private final PermissionServiceImpl permissionService;
 
     @PostMapping
-    public ApiResponse<?> createPermission(PermissionCreationRequest permissionCreationRequest) {
+    public ApiResponse<?> createPermission(@RequestBody PermissionCreationRequest permissionCreationRequest) {
         return ApiResponse.builder()
             .success(true)
             .result(permissionService.createPermission(permissionCreationRequest))
