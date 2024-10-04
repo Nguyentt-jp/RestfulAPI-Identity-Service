@@ -1,16 +1,14 @@
 package identity_service.demo.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,11 +17,14 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID userId;
     private String userName;
     private String password;
     private String firstName;
     private String lastName;
     private String email;
     private Set<String> roles;
+
+    /*@ManyToMany
+    private Set<Role> roles;*/
 }

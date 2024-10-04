@@ -1,6 +1,6 @@
 package identity_service.demo.configuration;
 
-import identity_service.demo.entity.Role;
+import identity_service.demo.entity.enums.Role;
 import identity_service.demo.entity.User;
 import identity_service.demo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class AplicationInitConfig {
                         .firstName("admin")
                         .lastName("admin")
                         .email("admin@example.com")
-                        .roles(roles)
+                        //.roles(roles)
                         .build();
 
                 userRepository.save(user);

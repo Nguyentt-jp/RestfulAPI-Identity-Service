@@ -5,7 +5,6 @@ import identity_service.demo.service.JwtTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.MacAlgorithm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,9 +44,9 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     // Liet ke cac role trong 1 user
     private String buildScope(User user) {
         StringJoiner scopeJoiner = new StringJoiner(" ");
-        if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(scopeJoiner::add);
-        }
+        //if (!CollectionUtils.isEmpty(user.getRoles())) {
+            //user.getRoles().forEach(scopeJoiner::add);
+        //}
         return scopeJoiner.toString();
     }
 

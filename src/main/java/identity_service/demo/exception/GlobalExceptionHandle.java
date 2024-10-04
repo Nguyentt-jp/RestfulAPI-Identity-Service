@@ -3,6 +3,7 @@ package identity_service.demo.exception;
 import identity_service.demo.dto.response.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -39,12 +40,30 @@ public class GlobalExceptionHandle {
                 .error(true)
                 .message(errorCode.getMessage()).build();
 
-        return ResponseEntity.badRequest().body(
-                ApiResponse.builder()
-                        .success(false)
-                        .result(exceptionResponse)
-                        .build()
-        );
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(
+                        ApiResponse.builder()
+                                .success(false)
+                                .result(exceptionResponse)
+                                .build()
+                );
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException e) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder()
+                .error(true)
+                .message(errorCode.getMessage())
+                .build();
+        return ResponseEntity.status(errorCode.getStatusCode())
+                .body(
+                        ApiResponse.builder()
+                                .success(false)
+                                .result(exceptionResponse)
+                                .build()
+                );
     }
 
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
@@ -71,7 +90,7 @@ public class GlobalExceptionHandle {
         }
 
         try {
-            if (errorCodeList.isEmpty()){
+            if (errorCodeList.isEmpty()) {
                 errorCodeList.add(ErrorCode.INVALID_KEY);
             }
             //errorCode = ErrorCode.valueOf(errorMessage);

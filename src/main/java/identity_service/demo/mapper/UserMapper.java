@@ -5,6 +5,7 @@ import identity_service.demo.dto.request.UpdateUserRequest;
 import identity_service.demo.dto.response.UserResponse;
 import identity_service.demo.entity.User;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
@@ -14,5 +15,6 @@ public interface UserMapper {
 
     void mapperUpdateUserToUser(@MappingTarget User user, UpdateUserRequest updateUserRequest);
 
+    @Mapping(target = "roles", ignore = true)
     UserResponse mapperUserToUserResponse(User user);
 }

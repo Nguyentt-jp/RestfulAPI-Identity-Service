@@ -3,7 +3,7 @@ package identity_service.demo.service.impl;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
 import identity_service.demo.dto.response.UserResponse;
-import identity_service.demo.entity.Role;
+import identity_service.demo.entity.enums.Role;
 import identity_service.demo.entity.User;
 import identity_service.demo.exception.AppException;
 import identity_service.demo.exception.ErrorCode;
@@ -11,6 +11,8 @@ import identity_service.demo.mapper.UserMapper;
 import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
         Set<String> roles = new HashSet<>();
         roles.add(Role.USER.name());
 
-        newUser.setRoles(roles);
+        //newUser.setRoles(roles);
 
 
         if (userRepository.existsUserByUserName((user.getUserName()))) {
@@ -52,12 +54,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
 
         return userRepository.findAll().stream()
                 .map(user -> {
                     UserResponse userResponse = userMapper.mapperUserToUserResponse(user);
-                    userResponse.setRoles(user.getRoles());
+                    //userResponse.setRoles(user.getRoles());
                             return userResponse;
                         }
                 )
@@ -65,6 +68,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @PostAuthorize("returnObject.userName == authentication.name")
     public UserResponse getUserById(UUID id) {
 
         return userMapper.mapperUserToUserResponse(

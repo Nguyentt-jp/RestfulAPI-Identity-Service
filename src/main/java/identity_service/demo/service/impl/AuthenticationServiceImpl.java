@@ -36,7 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             tokenResponse.setToken(jwtTokenService.generateToken(existedUser));
             return tokenResponse;
         }else {
-            throw new AppException(ErrorCode.INVALID_LOGIN_FAILED);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
     }
 
