@@ -19,7 +19,6 @@ public class RoleCreationRequest {
     private String roleName;
     @NotNull
     private String description;
-    private Set<User> users;
 
     @NotNull
     private Set<Permission> permissions;

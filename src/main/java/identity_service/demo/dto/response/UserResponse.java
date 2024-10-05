@@ -1,5 +1,6 @@
 package identity_service.demo.dto.response;
 
+import identity_service.demo.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,11 +15,11 @@ import java.util.UUID;
 @Builder
 public class UserResponse {
 
-    private UUID id;
+    private UUID userId;
     private String userName;
     private String password;
     private String firstName;
     private String lastName;
     private String email;
-    private Set<String> roles;
+    private Set<Role> roles;
 }

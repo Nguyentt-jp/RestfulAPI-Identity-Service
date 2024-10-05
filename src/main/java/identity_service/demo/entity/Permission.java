@@ -13,10 +13,11 @@ import lombok.*;
 public class Permission {
 
     @Id
+    @Column(name = "permission_name")
     private String permissionName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_name", nullable = false)
+    @JoinColumn(name = "role_name")
     private Role role;
 
     private String description;

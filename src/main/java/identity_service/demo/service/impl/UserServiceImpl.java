@@ -3,7 +3,6 @@ package identity_service.demo.service.impl;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
 import identity_service.demo.dto.response.UserResponse;
-import identity_service.demo.entity.enums.Role;
 import identity_service.demo.entity.User;
 import identity_service.demo.exception.AppException;
 import identity_service.demo.exception.ErrorCode;
@@ -12,7 +11,6 @@ import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,10 +35,10 @@ public class UserServiceImpl implements UserService {
 
         newUser.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        Set<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+        Set<identity_service.demo.entity.Role> rolesList = new HashSet<>();
+        //rolesList.add();
 
-        //newUser.setRoles(roles);
+        //newUser.setRoles(rolesList);
 
 
         if (userRepository.existsUserByUserName((user.getUserName()))) {
@@ -48,7 +46,7 @@ public class UserServiceImpl implements UserService {
         }
 
         UserResponse userResponse = userMapper.mapperUserToUserResponse(userRepository.save(newUser));
-        userResponse.setRoles(roles);
+        userResponse.setRoles(rolesList);
 
         return userResponse;
     }

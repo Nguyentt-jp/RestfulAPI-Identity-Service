@@ -16,7 +16,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public Permission createPermission(PermissionCreationRequest permissionCreationRequest) {
         Permission permission = Permission.builder()
-            .role(permissionCreationRequest.getRole())
+            //.role(permissionCreationRequest.getRole())
             .description(permissionCreationRequest.getDescription())
             .build();
 
