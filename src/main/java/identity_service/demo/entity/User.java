@@ -26,6 +26,6 @@ public class User {
     private String lastName;
     private String email;
 
-    /*@ManyToMany(mappedBy = "users")*/
-    //private Set<String> roles;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Role> roles;
 }

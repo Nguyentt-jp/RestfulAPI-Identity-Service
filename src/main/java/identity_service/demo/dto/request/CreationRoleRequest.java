@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RoleCreationRequest {
+public class CreationRoleRequest {
     @NotNull
     private String roleName;
     @NotNull

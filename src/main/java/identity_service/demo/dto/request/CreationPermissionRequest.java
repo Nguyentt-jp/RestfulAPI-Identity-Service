@@ -1,6 +1,5 @@
 package identity_service.demo.dto.request;
 
-import identity_service.demo.entity.Role;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +10,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PermissionCreationRequest {
-    private String permissionName;
+public class CreationPermissionRequest {
     @NotNull
-    private Role role;
+    private String permissionName;
+
     @NotNull
     private String description;
 }

@@ -16,9 +16,9 @@ public class Permission {
     @Column(name = "permission_name")
     private String permissionName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_name")
-    private Role role;
+    private Role role;*/
 
     private String description;
 }

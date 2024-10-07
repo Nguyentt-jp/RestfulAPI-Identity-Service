@@ -29,24 +29,34 @@ public class JwtTokenServiceImpl implements JwtTokenService {
     public String generateToken(User user) {
         Date now = new Date();
         //Date expirationDate = new Date(now.getTime() + JWT_EXPIRATION_TIME);
-        Date expirationDate = new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli());
+        Date expirationDate = new Date(Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli());// 1 Gio
 
         return Jwts.builder()
-                .header().type("JWT").and()
-                .subject(user.getUserName())
-                .issuedAt(now)
-                .expiration(expirationDate)
-                .signWith(getSecretKey(),Jwts.SIG.HS512)
-                .claim("scope",buildScope(user))
-                .compact();
+            .header().type("JWT").and()
+            .subject(user.getUserName())
+            .issuedAt(now)
+            .expiration(expirationDate)
+            .signWith(getSecretKey(),Jwts.SIG.HS512)
+            .claim("scope",buildScope(user))
+            .compact();
     }
 
     // Liet ke cac role trong 1 user
     private String buildScope(User user) {
         StringJoiner scopeJoiner = new StringJoiner(" ");
-        //if (!CollectionUtils.isEmpty(user.getRoles())) {
-            //user.getRoles().forEach(scopeJoiner::add);
-        //}
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(
+                role -> {
+                    scopeJoiner.add("ROLE_" + role.getRoleName());
+                    if (!CollectionUtils.isEmpty(role.getPermissions())) {
+                        role.getPermissions().forEach(
+                            permission -> scopeJoiner.add(permission.getPermissionName())
+                        );
+                    }
+                }
+
+            );
+        }
         return scopeJoiner.toString();
     }
 
@@ -61,19 +71,19 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
     public String getUsername(String token) {
         Claims claims = Jwts.parser()
-                .verifyWith(getSecretKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+            .verifyWith(getSecretKey())
+            .build()
+            .parseSignedClaims(token)
+            .getPayload();
         return claims.getSubject();
     }
     
     public boolean validateToken(String token) {
         try {
             Jwts.parser()
-                    .verifyWith(getSecretKey())
-                    .build()
-                    .parseSignedClaims(token);
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token);
             return true;
         } catch (MalformedJwtException e) {
             log.error("Invalid JWT token", e);

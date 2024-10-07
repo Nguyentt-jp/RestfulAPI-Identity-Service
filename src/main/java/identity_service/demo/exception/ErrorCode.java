@@ -18,7 +18,8 @@ public enum ErrorCode {
     INVALID_PASSWORD(1004, HttpStatus.BAD_REQUEST, Collections.singletonList("Password must be at least 8 characters")),
     INVALID_USERNAME(1005, HttpStatus.BAD_REQUEST, Collections.singletonList("username must be at least 5 characters")),
     UNAUTHENTICATED(1006, HttpStatus.UNAUTHORIZED, Collections.singletonList("Username or Password invalid!")),
-    UNAUTHORIZED(1007, HttpStatus.FORBIDDEN, Collections.singletonList("User Not Authorization!"));
+    UNAUTHORIZED(1007, HttpStatus.FORBIDDEN, Collections.singletonList("User Not Authorization!")),
+    INVALID_ROLE_EXISTED(1007, HttpStatus.BAD_REQUEST, Collections.singletonList("RoleName already exists!"));
 
     ErrorCode(int code, HttpStatusCode statusCode, List<String> message){
         this.code = code;

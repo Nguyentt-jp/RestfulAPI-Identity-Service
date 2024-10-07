@@ -19,22 +19,14 @@ public class Role {
 
     private String description;
 
-   /* @ManyToMany(fetch = FetchType.LAZY)
+   /*@ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_roles",
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "role_name")
-    )*/
-    //private Set<User> users;
-
-    @OneToMany(
-        mappedBy = "role",
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.ALL
     )
-    private Set<Permission> permissions;
+    private Set<User> users;*/
 
-    public Role(String roleName) {
-        this.roleName = roleName;
-    }
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Permission> permissions;
 }

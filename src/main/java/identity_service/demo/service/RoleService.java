@@ -1,9 +1,11 @@
 package identity_service.demo.service;
 
-import identity_service.demo.dto.request.RoleCreationRequest;
-import identity_service.demo.dto.response.RoleResponse;
+import identity_service.demo.dto.request.CreationRoleRequest;
 import identity_service.demo.entity.Role;
 
+import java.util.List;
+
 public interface RoleService {
-    Role createRole(RoleCreationRequest roleCreationRequest);
+    Role createRole(CreationRoleRequest roleCreationRequest);
+    List<Role> getAllRoles();
 }

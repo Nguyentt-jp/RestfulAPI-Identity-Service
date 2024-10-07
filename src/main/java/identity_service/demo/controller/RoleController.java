@@ -1,13 +1,10 @@
 package identity_service.demo.controller;
 
-import identity_service.demo.dto.request.RoleCreationRequest;
+import identity_service.demo.dto.request.CreationRoleRequest;
 import identity_service.demo.dto.response.ApiResponse;
 import identity_service.demo.service.impl.RoleServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,11 +13,18 @@ public class RoleController {
     private final RoleServiceImpl roleService;
 
     @PostMapping
-    public ApiResponse<?> createRole(@RequestBody RoleCreationRequest roleCreationRequest) {
-
+    public ApiResponse<?> createRole(@RequestBody CreationRoleRequest roleCreationRequest) {
         return ApiResponse.builder()
             .success(true)
             .result(roleService.createRole(roleCreationRequest))
+            .build();
+    }
+
+    @GetMapping
+    public ApiResponse<?> getAllRoles() {
+        return ApiResponse.builder()
+            .success(true)
+            .result(roleService.getAllRoles())
             .build();
     }
 }

@@ -37,25 +37,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
-                .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        authorizeRequests -> authorizeRequests
-                                .requestMatchers(HttpMethod.GET, "/auth/intro").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/auth").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/users").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/roles").permitAll()
-                                .requestMatchers( HttpMethod.POST,"/permissions").permitAll()
-                                .anyRequest().authenticated()
+            .csrf(AbstractHttpConfigurer::disable)
+            .cors(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(
+                authorizeRequests -> authorizeRequests
+                    .requestMatchers(HttpMethod.GET, "/auth/intro").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/auth").permitAll()
+                    .requestMatchers(HttpMethod.GET,"/user").permitAll()
+                    .anyRequest().authenticated()
                 );
 
         httpSecurity.oauth2ResourceServer(
-                oauth2 -> oauth2.jwt(
-                                jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
-                                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                        )
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+            oauth2 -> oauth2.jwt(
+                jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                    .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                )
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
 
         return httpSecurity.build();
@@ -64,7 +61,7 @@ public class SecurityConfig {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
@@ -77,9 +74,9 @@ public class SecurityConfig {
         SecretKey key = Keys.hmacShaKeyFor(keyBytes);
 
         return NimbusJwtDecoder
-                .withSecretKey(key)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
+            .withSecretKey(key)
+            .macAlgorithm(MacAlgorithm.HS512)
+            .build();
     }
 
     @Bean

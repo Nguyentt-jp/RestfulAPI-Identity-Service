@@ -10,7 +10,8 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserResponse createUser(CreationUserRequest user);
+    UserResponse createUserByAdmin(CreationUserRequest user);
+    UserResponse createUserByUser(CreationUserRequest user);
     List<UserResponse> getAllUsers();
     UserResponse getUserById(UUID id);
     void deleteUser(UUID id);

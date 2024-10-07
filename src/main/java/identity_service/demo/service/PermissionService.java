@@ -1,10 +1,11 @@
 package identity_service.demo.service;
 
-import identity_service.demo.dto.request.PermissionCreationRequest;
-import identity_service.demo.dto.response.PermissionResponse;
+import identity_service.demo.dto.request.CreationPermissionRequest;
 import identity_service.demo.entity.Permission;
 
+import java.util.List;
 
 public interface PermissionService {
-    Permission createPermission(PermissionCreationRequest roleCreationRequest);
+    Permission createPermission(CreationPermissionRequest roleCreationRequest);
+    List<Permission> getAllPermissions();
 }

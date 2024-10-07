@@ -20,15 +20,15 @@ public class GlobalExceptionHandle {
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException e) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .error(true)
-                .message(Collections.singletonList(String.valueOf(e.getMessage())))
-                .build();
+            .error(true)
+            .message(Collections.singletonList(String.valueOf(e.getMessage())))
+            .build();
 
         return ResponseEntity.badRequest().body(
-                ApiResponse.builder()
-                        .success(false)
-                        .result(exceptionResponse)
-                        .build()
+            ApiResponse.builder()
+                .success(false)
+                .result(exceptionResponse)
+                .build()
         );
     }
 
@@ -37,16 +37,16 @@ public class GlobalExceptionHandle {
         ErrorCode errorCode = e.getErrorCode();
 
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .error(true)
-                .message(errorCode.getMessage()).build();
+            .error(true)
+            .message(errorCode.getMessage()).build();
 
         return ResponseEntity.status(errorCode.getStatusCode())
-                .body(
-                        ApiResponse.builder()
-                                .success(false)
-                                .result(exceptionResponse)
-                                .build()
-                );
+            .body(
+                ApiResponse.builder()
+                    .success(false)
+                    .result(exceptionResponse)
+                    .build()
+            );
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
@@ -54,30 +54,30 @@ public class GlobalExceptionHandle {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .error(true)
-                .message(errorCode.getMessage())
-                .build();
+            .error(true)
+            .message(errorCode.getMessage())
+            .build();
         return ResponseEntity.status(errorCode.getStatusCode())
-                .body(
-                        ApiResponse.builder()
-                                .success(false)
-                                .result(exceptionResponse)
-                                .build()
-                );
+            .body(
+                ApiResponse.builder()
+                    .success(false)
+                    .result(exceptionResponse)
+                    .build()
+            );
     }
 
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
     ResponseEntity<ApiResponse<Object>> MethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         ExceptionResponse exceptionResponse = ExceptionResponse.builder()
-                .error(true)
-                .message(Collections.singletonList("Data type mismatch!"))
-                .build();
+            .error(true)
+            .message(Collections.singletonList("Data type mismatch!"))
+            .build();
 
         return ResponseEntity.badRequest().body(
-                ApiResponse.builder()
-                        .success(false)
-                        .result(exceptionResponse)
-                        .build()
+            ApiResponse.builder()
+                .success(false)
+                .result(exceptionResponse)
+                .build()
         );
     }
 
