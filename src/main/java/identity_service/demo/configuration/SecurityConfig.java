@@ -1,9 +1,7 @@
 package identity_service.demo.configuration;
 
-import identity_service.demo.service.impl.JwtTokenServiceImpl;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Jwks;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,16 +22,16 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     @Value("${spring.jwt.signerKey}")
     private String signerKey;
+
+    private final CustomJwtDecoder customJwtDecode;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -49,13 +48,24 @@ public class SecurityConfig {
 
         httpSecurity.oauth2ResourceServer(
             oauth2 -> oauth2.jwt(
-                jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())
+                jwtConfigurer -> jwtConfigurer.decoder(customJwtDecode)
                     .jwtAuthenticationConverter(jwtAuthenticationConverter())
                 )
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    JwtDecoder jwtDecoder() {
+        byte[] keyBytes = Decoders.BASE64.decode(signerKey);
+
+
+        return NimbusJwtDecoder
+            .withSecretKey(Keys.hmacShaKeyFor(keyBytes))
+            .macAlgorithm(MacAlgorithm.HS512)
+            .build();
     }
 
     @Bean
@@ -66,17 +76,6 @@ public class SecurityConfig {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
-    }
-
-    @Bean
-    JwtDecoder jwtDecoder() {
-        byte[] keyBytes = Decoders.BASE64.decode(signerKey);
-        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
-
-        return NimbusJwtDecoder
-            .withSecretKey(key)
-            .macAlgorithm(MacAlgorithm.HS512)
-            .build();
     }
 
     @Bean

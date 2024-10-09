@@ -20,7 +20,7 @@ public class AuthenticationController {
 
     @GetMapping
     public ApiResponse<Object> login(@RequestBody AuthenticationRequest authenRequest) {
-       TokenResponse tokenResponse = authenService.authenticate(authenRequest);
+       TokenResponse tokenResponse = authenService.login(authenRequest);
 
         return ApiResponse.builder()
             .success(true)

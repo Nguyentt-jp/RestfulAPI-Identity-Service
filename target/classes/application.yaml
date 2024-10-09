@@ -20,4 +20,4 @@ spring:
     open-in-view: true
 
   jwt:
-    signerKey: "dm90ZXJ1YmJlZHRyb29wc2tuZXd3cml0ZWhpbXNlbGZzbWFsbGVyZHJpdmVybWFueXNvbWVob3dwYXRocmVnaQ=="
+    signerKey: "E4+rLfKyvXCn10Ol6IVIfRF5q2m3AUQUfHLnUykAkGZV6FVx2S43vZk054hTspSLW+QMWWKbQMFxfvFbF3o3oUGbmpXUxe1Gzg8o4Qj8Ri8IduyG2cFySOq9MsPheaG+bVdpucZ9Z3YS4SLL4SebErKTDAVJT/+09dUb3fChF2o="

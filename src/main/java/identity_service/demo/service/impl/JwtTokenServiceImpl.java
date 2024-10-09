@@ -1,6 +1,8 @@
 package identity_service.demo.service.impl;
 
 import identity_service.demo.entity.User;
+import identity_service.demo.repository.InvalidTokenRepository;
+import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.JwtTokenService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -15,13 +17,18 @@ import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenServiceImpl implements JwtTokenService {
 
+    private final InvalidTokenRepository invalidTokenRepository;
+
+    private final UserRepository userRepository;
     @Value("${spring.jwt.signerKey}")
     private String SECRET_KEY;
     //private final long JWT_EXPIRATION_TIME = 604800000L;// 7 day
@@ -36,9 +43,23 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             .subject(user.getUserName())
             .issuedAt(now)
             .expiration(expirationDate)
+            .id(UUID.randomUUID().toString())
             .signWith(getSecretKey(),Jwts.SIG.HS512)
             .claim("scope",buildScope(user))
             .compact();
+    }
+
+    public String refreshToken(String token) {
+        boolean tokenValid = validateToken(token);
+        var invalidToken = invalidTokenRepository.findById(extractAllToken(token).getId());
+        String userName = "";
+        if (tokenValid && invalidToken.isEmpty()) {
+            userName = getUsername(token);
+        }
+
+        User user = userRepository.findUserByUserName(userName);
+
+        return generateToken(user);
     }
 
     // Liet ke cac role trong 1 user
@@ -65,17 +86,20 @@ public class JwtTokenServiceImpl implements JwtTokenService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
 
-        //MacAlgorithm macAlgorithm = Jwts.SIG.HS512;
-        //return macAlgorithm.key().build();
+       /* MacAlgorithm macAlgorithm = Jwts.SIG.HS512;
+        return macAlgorithm.key().build();*/
     }
 
     public String getUsername(String token) {
-        Claims claims = Jwts.parser()
+        return extractAllToken(token).getSubject();
+    }
+
+    public Claims extractAllToken(String token) {
+        return Jwts.parser()
             .verifyWith(getSecretKey())
             .build()
             .parseSignedClaims(token)
             .getPayload();
-        return claims.getSubject();
     }
     
     public boolean validateToken(String token) {

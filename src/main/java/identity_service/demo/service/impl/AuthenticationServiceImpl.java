@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -21,8 +23,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final JwtTokenServiceImpl jwtTokenService;
+    private final InvalidTokenServiceImpl invalidTokenService;
     
-    public TokenResponse authenticate(AuthenticationRequest authenRequest) {
+    public TokenResponse login(AuthenticationRequest authenRequest) {
 
         User existedUser = userRepository.findUserByUserName(authenRequest.getUserName());
 
@@ -38,6 +41,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }else {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
+    }
+
+    public String logout(String token) {
+        if (jwtTokenService.validateToken(token)) {
+            invalidTokenService.createInvalidToken(token);
+        }
+        return "Logout!";
     }
 
     public UserResponse authenticateWithToken(IntrospectRequest authenRequest) {
