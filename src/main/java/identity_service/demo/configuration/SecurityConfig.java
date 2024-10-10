@@ -1,26 +1,22 @@
 package identity_service.demo.configuration;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -28,20 +24,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Value("${spring.jwt.signerKey}")
-    private String signerKey;
-
     private final CustomJwtDecoder customJwtDecode;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(AbstractHttpConfigurer::disable)
+            .cors(Customizer.withDefaults())
             .authorizeHttpRequests(
                 authorizeRequests -> authorizeRequests
                     .requestMatchers(HttpMethod.GET, "/auth/intro").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/auth").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/auth/logout").permitAll()
                     .requestMatchers(HttpMethod.GET,"/user").permitAll()
                     .anyRequest().authenticated()
                 );
@@ -58,14 +52,18 @@ public class SecurityConfig {
     }
 
     @Bean
-    JwtDecoder jwtDecoder() {
-        byte[] keyBytes = Decoders.BASE64.decode(signerKey);
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
 
+        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.setAllowCredentials(true);
 
-        return NimbusJwtDecoder
-            .withSecretKey(Keys.hmacShaKeyFor(keyBytes))
-            .macAlgorithm(MacAlgorithm.HS512)
-            .build();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfiguration);
+
+        return source;
     }
 
     @Bean

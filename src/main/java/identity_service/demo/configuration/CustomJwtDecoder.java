@@ -6,7 +6,6 @@ import identity_service.demo.service.impl.JwtTokenServiceImpl;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.ParseException;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -17,7 +16,6 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -25,17 +23,15 @@ import java.util.Optional;
 public class CustomJwtDecoder implements JwtDecoder {
 
     @Value("${spring.jwt.signerKey}")
-    private static String secretKey;
+    private String secretKey;
 
     private final JwtTokenServiceImpl jwtTokenService;
     private final InvalidTokenRepository invalidTokenRepository;
 
-    //private NimbusJwtDecoder jwtDecoder = null;
-
     @Override
     public Jwt decode(String token) throws JwtException {
 
-        //String jwtId = jwtTokenService.extractAllToken(token).getId();
+        String jwtId = jwtTokenService.extractAllToken(token).getId();
 
         try {
             boolean verifyToken = jwtTokenService.validateToken(token);
@@ -46,14 +42,17 @@ public class CustomJwtDecoder implements JwtDecoder {
             throw new JwtException(e.getMessage());
         }
 
-        //Optional<InvalidToken> invalidToken = invalidTokenRepository.findById(jwtId);
+        Optional<InvalidToken> invalidToken = invalidTokenRepository.findById(jwtId);
 
-
-        return NimbusJwtDecoder
-            .withSecretKey(getSecretKey())
-            .macAlgorithm(MacAlgorithm.HS512)
-            .build()
-            .decode(token);
+        if (invalidToken.isEmpty()) {
+            return NimbusJwtDecoder
+                .withSecretKey(getSecretKey())
+                .macAlgorithm(MacAlgorithm.HS512)
+                .build()
+                .decode(token);
+        }else {
+            throw new JwtException("Invalid token");
+        }
     }
 
     private SecretKey getSecretKey() {

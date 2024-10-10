@@ -3,6 +3,7 @@ package identity_service.demo.controller;
 import identity_service.demo.dto.response.ApiResponse;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
+import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.ViewService;
 import identity_service.demo.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ public class UserController {
 
     private final UserServiceImpl userService;
     private final ViewService viewService;
+    private final UserRepository userRepository;
 
     @GetMapping
     public ApiResponse<Object> getAllUsers() {
@@ -39,6 +41,19 @@ public class UserController {
             .result(userService.getAllUsers())
             .build();
     }
+
+    @GetMapping("/myinfo")
+    public ApiResponse<Object> getMyInfo() {
+        var context = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        var user = userRepository.findUserByUserName(context);
+
+        return ApiResponse.builder()
+            .success(true)
+            .result(user)
+            .build();
+    }
+
 
     @GetMapping("/{id}")
     public ApiResponse<Object> getUserById(@PathVariable(value = "id") UUID id) {

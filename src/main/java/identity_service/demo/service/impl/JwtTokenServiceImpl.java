@@ -17,7 +17,6 @@ import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -30,7 +29,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
     private final UserRepository userRepository;
     @Value("${spring.jwt.signerKey}")
-    private String SECRET_KEY;
+    private String signerKey;
     //private final long JWT_EXPIRATION_TIME = 604800000L;// 7 day
 
     public String generateToken(User user) {
@@ -75,7 +74,6 @@ public class JwtTokenServiceImpl implements JwtTokenService {
                         );
                     }
                 }
-
             );
         }
         return scopeJoiner.toString();
@@ -83,7 +81,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
 
     private SecretKey getSecretKey() {
 
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+        byte[] keyBytes = Decoders.BASE64.decode(signerKey);
         return Keys.hmacShaKeyFor(keyBytes);
 
        /* MacAlgorithm macAlgorithm = Jwts.SIG.HS512;
