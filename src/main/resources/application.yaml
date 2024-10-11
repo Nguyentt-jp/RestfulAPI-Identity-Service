@@ -21,3 +21,9 @@ spring:
 
   jwt:
     signerKey: "E4+rLfKyvXCn10Ol6IVIfRF5q2m3AUQUfHLnUykAkGZV6FVx2S43vZk054hTspSLW+QMWWKbQMFxfvFbF3o3oUGbmpXUxe1Gzg8o4Qj8Ri8IduyG2cFySOq9MsPheaG+bVdpucZ9Z3YS4SLL4SebErKTDAVJT/+09dUb3fChF2o="
+
+  outbound:
+    identity:
+      client-id: "208388951287-58a9gj7iem7r6k8vdviervjridbni88g.apps.googleusercontent.com"
+      client-secret: "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"
+      redirect-uri: "http://localhost:3000/authentication"

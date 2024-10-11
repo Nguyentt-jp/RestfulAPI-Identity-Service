@@ -1,6 +1,7 @@
 package identity_service.demo.service.impl;
 
 import identity_service.demo.dto.request.AuthenticationRequest;
+import identity_service.demo.dto.request.ExchangeTokenRequest;
 import identity_service.demo.dto.request.IntrospectRequest;
 import identity_service.demo.dto.response.TokenResponse;
 import identity_service.demo.dto.response.UserResponse;
@@ -10,20 +11,55 @@ import identity_service.demo.exception.ErrorCode;
 import identity_service.demo.mapper.UserMapper;
 import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.AuthenticationService;
+import identity_service.demo.service.OutboundIdentityClient;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final JwtTokenServiceImpl jwtTokenService;
     private final InvalidTokenServiceImpl invalidTokenService;
+    private final OutboundIdentityClient outboundIdentityClient;
+
+    @Value("${spring.outbound.identity.client-id}")
+    private String CLIENT_ID;
+
+    @Value("${spring.outbound.identity.client-secret}")
+    private String CLIENT_SECRET;
+
+    @Value("${spring.outbound.identity.redirect-uri}")
+    private String REDIRECT_URI;
+
+    @NonFinal
+    protected final String GRANT_TYPE = "authorization_code";
+
+    public TokenResponse outboundAuthentication(String code){
+        var response = outboundIdentityClient.exchangeToken(
+            ExchangeTokenRequest.builder()
+                .code(code)
+                .clientId(CLIENT_ID)
+                .clientSecret(CLIENT_SECRET)
+                .redirectUri(REDIRECT_URI)
+                .grantType(GRANT_TYPE)
+                .build()
+        );
+
+        log.warn("Response: {}", response);
+
+        return TokenResponse.builder()
+            .token(response.getAccessToken())
+            .build();
+
+    }
     
     public TokenResponse login(AuthenticationRequest authenRequest) {
 

@@ -1,6 +1,7 @@
 package identity_service.demo.controller;
 
 import identity_service.demo.dto.request.AuthenticationRequest;
+import identity_service.demo.dto.request.CodeRequest;
 import identity_service.demo.dto.request.IntrospectRequest;
 import identity_service.demo.dto.response.ApiResponse;
 import identity_service.demo.dto.response.TokenResponse;
@@ -15,6 +16,15 @@ public class AuthenticationController {
 
     private final AuthenticationServiceImpl authenService;
 
+    @PostMapping("/outbound/authentication")
+    public ApiResponse<Object> authenticate(@RequestParam("code") String code) {
+
+        return ApiResponse.builder()
+            .success(true)
+            .result(authenService.outboundAuthentication(code))
+            .build();
+    }
+
     @PostMapping("/login")
     public ApiResponse<Object> login(@RequestBody AuthenticationRequest authenRequest) {
        TokenResponse tokenResponse = authenService.login(authenRequest);
@@ -26,7 +36,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/logout")
-    public ApiResponse<?> logout(@RequestBody IntrospectRequest introspectRequest) {
+    public ApiResponse<Object> logout(@RequestBody IntrospectRequest introspectRequest) {
         authenService.logout(introspectRequest.getToken());
         return ApiResponse.builder()
             .success(true)

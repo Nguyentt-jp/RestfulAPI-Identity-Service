@@ -11,7 +11,7 @@
 .mtj.tmp/
 # Idea
 .idea/
-example-webapp-main/
+example-webapp/
 # Package Files #
 *.jar
 *.war
