@@ -1,0 +1,18 @@
+body{
+    margin: 0;
+
+}
+
+.login-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 100vh;
+}
+.login-form{
+    height: 70vh;
+    width: 60vh;
+    border: 3px solid black;
+    padding: 15px;
+}
