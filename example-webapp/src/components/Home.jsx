@@ -2,9 +2,9 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {getToken} from "../services/localStorageService";
 import Header from "./header/Header";
-import {Avatar, Box, Card, CircularProgress, Typography} from "@mui/material";
 import "../App.css"
 import axios from "axios";
+import {OrbitProgress} from "react-loading-indicators";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -15,6 +15,7 @@ export default function Home() {
             `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`
         ).then( res => {
             setUserDetails(res.data);
+            console.log(res.data);
             }
         ).catch( error => {
             console.error(error)
@@ -29,119 +30,63 @@ export default function Home() {
         } else {
             getUserDetails(accessToken).then(r => {});
         }
-    }, [navigate]);
+    }, []);
 
     return (
         <>
             <Header></Header>
             {userDetails ? (
-                <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                    height="100vh"
-                    bgcolor={"#f0f2f5"}
-                >
-                    <Card
-                        sx={{
-                            minWidth: 350,
-                            maxWidth: 500,
-                            boxShadow: 4,
-                            borderRadius: 4,
-                            padding: 4,
-                        }}
-                    >
-                        <Box
-                            sx={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                width: "100%",
-                                gap: "10px",
-                            }}
-                        >
-                            <Typography
-                                sx={{
-                                    fontSize: 18,
-                                    mb: "40px",
-                                }}
-                            >
-                                Welcome, {userDetails.name} !
-                            </Typography>
-                                <Avatar
-                                    src={userDetails.picture}
-                                    alt={`${userDetails.given_name}'s profile`}
-                                    sx={{ width: 100, height: 100}}
-                                />
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "flex-start",
-                                    width: "100%", // Ensure content takes full width
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        fontSize: 14,
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Email
-                                </Typography>
-                                <Typography
-                                    sx={{
-                                        fontSize: 14,
-                                    }}
-                                >
-                                    {userDetails.email}
-                                </Typography>
-                            </Box>
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "flex-start",
-                                    width: "100%", // Ensure content takes full width
-                                }}
-                            >
-                                <Typography
-                                    sx={{
-                                        fontSize: 14,
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    Name
-                                </Typography>
-                                <Typography
-                                    sx={{
-                                        fontSize: 14,
-                                    }}
-                                >
-                                    {userDetails.name}
-                                </Typography>
-                            </Box>
+                <div className="vh-100">
+                    <div className="container py-5 h-100">
+                        <div className="row d-flex justify-content-center align-items-center h-100">
+                            <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+                                <div className="card shadow-2-strong" style={{borderRadius: "1rem"}}>
+                                    <div className="card-body p-5">
 
-                        </Box>
-                    </Card>
-                </Box>
+                                        <div className="text-center">
+                                            <h3 className="mb-5">Welcome {userDetails.name}</h3>
+                                            <img
+                                                src={userDetails.picture}
+                                                alt=""
+                                                style={{
+                                                    borderRadius: "100px",
+                                                    height: "100px",
+                                                    width: "100px",
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <div>
+                                                <label className="form-label" style={{width: "108px"}}>UserId:</label>
+                                                <label>{userDetails.id}</label>
+                                            </div>
+                                            <div>
+                                                <label className="form-label" style={{width: "108px"}}>Username:</label>
+                                                <label>{userDetails.email}</label>
+                                            </div>
+                                            <div>
+                                                <label className="form-label" style={{width: "108px"}}>FirstName:</label>
+                                                <label>{userDetails.given_name}</label>
+                                            </div>
+                                            <div>
+                                                <label className="form-label" style={{width: "108px"}}>Username:</label>
+                                                <label>{userDetails.family_name}</label>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             ) : (
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "30px",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height: "100vh",
-                    }}
+                <div className="d-flex justify-content-center align-items-center"
+                     style={{height: '100vh'}}
                 >
-                    <CircularProgress></CircularProgress>
-                    <Typography>Loading ...</Typography>
-                </Box>
+                    <OrbitProgress color="#52edf4" size="large" text="Loading..." textColor="#000000"/>
+                </div>
             )}
         </>
     );

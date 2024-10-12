@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {getToken, setToken} from "../services/localStorageService";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import {setToken} from "../services/localStorageService";
 import axios from "axios";
+import {OrbitProgress} from "react-loading-indicators";
 
 export default function Authentication() {
     const navigate = useNavigate();
@@ -35,20 +35,10 @@ export default function Authentication() {
     }, [isLoggedin, navigate]);
 
     return (
-        <>
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection : "column",
-                    gap: "30px",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100vh",
-                }}
-            >
-                <CircularProgress></CircularProgress>
-                <Typography>Authenticating...</Typography>
-            </Box>
-        </>
+        <div className="d-flex justify-content-center align-items-center"
+            style={{height:'100vh'}}
+        >
+            <OrbitProgress color="#52edf4" size="large" text="Loading..." textColor="#000000"/>
+        </div>
     );
 }
