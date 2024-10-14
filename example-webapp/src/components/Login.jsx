@@ -4,6 +4,7 @@ import {getToken, setToken} from "../services/localStorageService";
 import {OAuthConfig} from "../configurations/configuration";
 import { FaGoogle } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa6";
+import axios from "axios";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -33,36 +34,28 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
-    const handleSubmit = (event) => {
+    const handleSignup = (event) => {
+
+    }
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
-        fetch("http://localhost:8080/api/auth/login", {
-            method: "POST",
+        await axios.post("http://localhost:8080/api/auth/login", {
+            userName: username,
+            password: password,
+        },
+        {
             headers: {
                 "Content-Type": "application/json", // Set the content type to JSON
-            },
-            body: JSON.stringify({
-                userName: username,
-                password: password,
-            }),
-        })
-            .then((response) => {
-                return response.json();
-            })
-            .then((data) => {
-                console.log("Response body:", data);
-
-                // This code is a commitment between BE and FE
-
-                setToken(data.result?.token);
-
-                console.log(getToken());
-
-                navigate("/");
-            })
-            .catch((error) => {
-
-            });
+            }
+        }).then((response) => {
+            console.log(response.data);
+            setToken(response.data.result?.token);
+            navigate("/");
+        }).catch(
+            (error) => console.log(error)
+        );
     };
 
     const handleGoogleAuthSubmit = async () => {
@@ -94,6 +87,7 @@ export default function Login() {
                                            id="typeEmailX-2"
                                            className="form-control form-control-lg"
                                            placeholder="Username"
+                                           onChange={(event) => {setUsername(event.target.value)}}
                                     />
                                 </div>
 
@@ -102,12 +96,13 @@ export default function Login() {
                                            id="typePasswordX-2"
                                            className="form-control form-control-lg"
                                            placeholder="Password"
+                                           onChange={(event) => {setPassword(event.target.value)}}
                                     />
                                 </div>
 
                                 <div className="form-check d-flex justify-content-start mb-4">
                                     <input className="form-check-input" type="checkbox" value="" id="form1Example3"/>
-                                    <label className="form-check-label" > Remember password </label>
+                                    <label className="form-check-label"> Remember password </label>
                                 </div>
 
                                 <button className="btn btn-primary btn-lg btn-block"
@@ -118,6 +113,16 @@ export default function Login() {
                                         onClick={handleSubmit}
                                 >
                                     Login
+                                </button>
+                                <button className="btn btn-primary btn-lg btn-block"
+                                        style={{
+                                            marginTop: "5px",
+                                            width: "320px",
+                                        }}
+                                        type="submit"
+                                        onClick={handleSignup}
+                                >
+                                    Signup
                                 </button>
 
                                 <hr className="my-4"/>
@@ -147,9 +152,7 @@ export default function Login() {
                                     >
                                         <FaFacebookF
                                             className="me-2"
-                                            style={{
-
-                                            }}
+                                            style={{}}
                                         />Sign in with facebook
                                     </button>
                                 </div>
@@ -160,114 +163,5 @@ export default function Login() {
                 </div>
             </div>
         </div>
-
-
-        /*
-            <>
-                <Snackbar
-                    open={snackBarOpen}
-                    onClose={handleCloseSnackBar}
-                    autoHideDuration={6000}
-                    anchorOrigin={{vertical: "top", horizontal: "right"}}
-                >
-                    <Alert
-                        onClose={handleCloseSnackBar}
-                        severity="error"
-                        variant="filled"
-                        sx={{width: "100%"}}
-                    >
-                        {snackBarMessage}
-                    </Alert>
-                </Snackbar>
-                <Box
-                    display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        justifyContent="center"
-                        height="100vh"
-                        bgcolor={"#f0f2f5"}
-                    >
-                        <Card
-                            sx={{
-                                minWidth: 400,
-                                maxWidth: 500,
-                                boxShadow: 4,
-                                borderRadius: 4,
-                                padding: 4,
-                            }}
-                        >
-                            <CardContent>
-                                <Typography variant="h5" component="h1" gutterBottom>
-                                    Welcome
-                                </Typography>
-                                <Box
-                                    component="form"
-                                    display="flex"
-                                    flexDirection="column"
-                                    alignItems="center"
-                                    justifyContent="center"
-                                    width="100%"
-                                    onSubmit={handleSubmit}
-                                >
-                                    <TextField
-                                        label="Username"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                    />
-                                    <TextField
-                                        label="Password"
-                                        type="password"
-                                        variant="outlined"
-                                        fullWidth
-                                        margin="normal"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
-                                    <Button
-                                        type="submit"
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
-                                        onClick={handleSubmit}
-                                        fullWidth
-                                        sx={{
-                                            mt: "15px",
-                                            mb: "25px",
-                                        }}
-                                    >
-                                        Login
-                                    </Button>
-                                    <Divider></Divider>
-                                </Box>
-
-                                <Box display="flex" flexDirection="column" width="100%" gap="25px">
-                                    <Button
-                                        type="button"
-                                        variant="contained"
-                                        color="secondary"
-                                        size="large"
-                                        onClick={handleGoogleAuthSubmit}
-                                        fullWidth
-                                        sx={{gap: "10px"}}
-                                    >
-                                        <GoogleIcon/>
-                                        Continue with Google
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        variant="contained"
-                                        color="success"
-                                        size="large"
-                                    >
-                                        Create an account
-                                    </Button>
-                                </Box>
-                            </CardContent>
-                        </Card>
-                    </Box>
-                </>*/
     );
 }

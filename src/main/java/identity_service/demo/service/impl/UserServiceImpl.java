@@ -1,9 +1,11 @@
 package identity_service.demo.service.impl;
 
+import identity_service.demo.dto.request.CreationPasswordRequest;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
 import identity_service.demo.dto.response.UserResponse;
-import identity_service.demo.entity.Role;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import identity_service.demo.entity.User;
 import identity_service.demo.exception.AppException;
 import identity_service.demo.exception.ErrorCode;
@@ -17,9 +19,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -69,6 +73,36 @@ public class UserServiceImpl implements UserService {
         var userResponse = userMapper.mapperUserToUserResponse(userRepository.save(newUser));
         userResponse.setRoles(new HashSet<>(roles));
 
+        return userResponse;
+    }
+
+    public void  createPassword(CreationPasswordRequest passwordRequest){
+        var context = SecurityContextHolder.getContext();
+        var getName = context.getAuthentication().getName();
+
+        User user = userRepository.findUserByUserName(getName).orElseThrow(
+            () -> new AppException(ErrorCode.INVALID_USER_EXISTED)
+        );
+
+        if (user.getPassword() != null){
+            throw new AppException(ErrorCode.PASSWORD_EXISTED);
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordRequest.getPassword()));
+        userRepository.save(user);
+    }
+
+    public UserResponse getUserInfo(){
+        var context = SecurityContextHolder.getContext();
+        var getName = context.getAuthentication().getName();
+
+        User user = userRepository.findUserByUserName(getName).orElseThrow(
+            () -> new AppException(ErrorCode.INVALID_USER_EXISTED)
+        );
+
+        UserResponse userResponse = userMapper.mapperUserToUserResponse(user);
+
+        userResponse.setNoPassword(user.getPassword() == null);
         return userResponse;
     }
 

@@ -56,7 +56,7 @@ public class JwtTokenServiceImpl implements JwtTokenService {
             userName = getUsername(token);
         }
 
-        User user = userRepository.findUserByUserName(userName);
+        User user = userRepository.findUserByUserName(userName).get();
 
         return generateToken(user);
     }

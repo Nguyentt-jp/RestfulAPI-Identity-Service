@@ -1,8 +1,11 @@
 package identity_service.demo.controller;
 
+import identity_service.demo.dto.request.CreationPasswordRequest;
 import identity_service.demo.dto.response.ApiResponse;
 import identity_service.demo.dto.request.CreationUserRequest;
 import identity_service.demo.dto.request.UpdateUserRequest;
+import identity_service.demo.dto.response.UserResponse;
+import identity_service.demo.mapper.UserMapper;
 import identity_service.demo.repository.UserRepository;
 import identity_service.demo.service.ViewService;
 import identity_service.demo.service.impl.UserServiceImpl;
@@ -10,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,6 +27,7 @@ public class UserController {
     private final UserServiceImpl userService;
     private final ViewService viewService;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @GetMapping
     public ApiResponse<Object> getAllUsers() {
@@ -42,15 +47,21 @@ public class UserController {
             .build();
     }
 
+    @PostMapping("/create-password")
+    public ApiResponse<Object> createPassword(@Valid @RequestBody CreationPasswordRequest passwordRequest) {
+        userService.createPassword(passwordRequest);
+        return ApiResponse.builder()
+            .success(true)
+            .result("Create password")
+            .build();
+    }
+
     @GetMapping("/myinfo")
     public ApiResponse<Object> getMyInfo() {
-        var context = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        var user = userRepository.findUserByUserName(context);
 
         return ApiResponse.builder()
             .success(true)
-            .result(user)
+            .result(userService.getUserInfo())
             .build();
     }
 
