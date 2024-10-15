@@ -31,6 +31,5 @@ public class CreationUserRequest {
     @Email
     private String email;
 
-    @NotNull
     private Set<String> roles;
 }

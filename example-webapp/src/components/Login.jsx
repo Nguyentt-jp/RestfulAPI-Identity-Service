@@ -5,6 +5,7 @@ import {OAuthConfig} from "../configurations/configuration";
 import { FaGoogle } from "react-icons/fa6";
 import { FaFacebookF } from "react-icons/fa6";
 import axios from "axios";
+import CreateUserModals from "./CreateUserModals";
 
 export default function Login() {
     const navigate = useNavigate();
@@ -114,16 +115,7 @@ export default function Login() {
                                 >
                                     Login
                                 </button>
-                                <button className="btn btn-primary btn-lg btn-block"
-                                        style={{
-                                            marginTop: "5px",
-                                            width: "320px",
-                                        }}
-                                        type="submit"
-                                        onClick={handleSignup}
-                                >
-                                    Signup
-                                </button>
+                                <CreateUserModals/>
 
                                 <hr className="my-4"/>
 
